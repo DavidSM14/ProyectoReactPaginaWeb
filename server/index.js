@@ -24,16 +24,16 @@ app.use(corsMiddleware());
 app.disable('x-powered-by');
 app.use(urlencoded({ extended: true }));
 
-// Servir archivos estáticos desde la carpeta 'dist'
-app.use(express.static(join(__dirname, '../dist')));
+// Configuración para servir archivos estáticos desde la carpeta 'web'
+app.use(express.static(join(__dirname, '../web')));
 
 // Usar routers para productos e imágenes
 app.use('/api/products', createProductRouter({ pool }));
 app.use('/api/images', createImagenRouter({ pool }));
 
-// Redirigir todas las rutas que no comienzan con '/api' a 'index.html'
+// Redirigir todas las rutas que no comienzan con '/api' a 'index.html' en 'web'
 app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(join(__dirname, '../dist', 'index.html'));
+  res.sendFile(join(__dirname, '../web', 'index.html'));
 });
 
 // Error handler
@@ -61,7 +61,7 @@ const PORT = process.env.PORT || 1234;
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
-  console.log(`Serving static files from ${join(__dirname, '../dist')}`);
+  console.log(`Serving static files from ${join(__dirname, '../web')}`);
 });
 
 export default app;
