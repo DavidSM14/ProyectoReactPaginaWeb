@@ -5,8 +5,8 @@ import { corsMiddleware } from './middlewares/cors.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import pg from 'pg';
-import 'dotenv/config';
 import path from 'path';
+import 'dotenv/config';
 
 const { Pool } = pg;
 const __filename = fileURLToPath(import.meta.url);
@@ -23,24 +23,14 @@ const app = express();
 app.use(json());
 app.use(corsMiddleware());
 app.disable('x-powered-by');
-app.use(urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 
-// Configuración para servir archivos estáticos desde la carpeta 'web'
-app.use(express.static(join(__dirname, '../web')));
+// Sirve archivos estáticos desde el directorio 'web'
+app.use(express.static(join(__dirname, 'web')));
 
 // Usar routers para productos e imágenes
 app.use('/api/products', createProductRouter({ pool }));
 app.use('/api/images', createImagenRouter({ pool }));
-
-// Redirigir todas las rutas que no comienzan con '/api' a 'index.html' en 'web'
-app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(path.join(__dirname, '../web', 'index.html'));
-});
-
-// Rutas del frontend específicas con parámetros
-app.get('/BlogHome/:newsId', (req, res) => {
-  res.sendFile(path.join(__dirname, '../web', 'index.html'));
-});
 
 // Error handler
 app.use((err, req, res, next) => {
@@ -52,6 +42,14 @@ app.use((err, req, res, next) => {
   console.error(`Error: ${err.message}`);
   res.status(500).json({ error: err.message });
 });
+
+app.use(express.static(path.join(__dirname, './web')));
+
+// Redirige todas las rutas no API a `index.html`
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, './web', 'index.html'));
+});
+
 
 // Configuración de caché para Vercel Edge Caching
 app.use((req, res, next) => {
@@ -67,7 +65,7 @@ const PORT = process.env.PORT || 1234;
 
 app.listen(PORT, () => {
   console.log(`Server listening on port ${PORT}`);
-  console.log(`Serving static files from ${join(__dirname, '../web')}`);
+  console.log(`Serving static files from ${join(__dirname, 'web')}`);
 });
 
 export default app;
