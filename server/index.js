@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import pg from 'pg';
 import 'dotenv/config';
+import path from 'path';
 
 const { Pool } = pg;
 const __filename = fileURLToPath(import.meta.url);
@@ -33,7 +34,12 @@ app.use('/api/images', createImagenRouter({ pool }));
 
 // Redirigir todas las rutas que no comienzan con '/api' a 'index.html' en 'web'
 app.get(/^\/(?!api).*/, (req, res) => {
-  res.sendFile(join(__dirname, '../web', 'index.html'));
+  res.sendFile(path.join(__dirname, '../web', 'index.html'));
+});
+
+// Rutas del frontend específicas con parámetros
+app.get('/BlogHome/:newsId', (req, res) => {
+  res.sendFile(path.join(__dirname, '../web', 'index.html'));
 });
 
 // Error handler
